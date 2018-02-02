@@ -63,5 +63,3 @@ def originalWithScreenShot():
         cv.rectangle(img_rgb, start, end, lineColor, thickness)
         break
     cv.imwrite('.\\samples\\res.png', img_rgb)
-
-originalWithScreenShot()
