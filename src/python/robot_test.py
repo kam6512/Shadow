@@ -1,21 +1,10 @@
-import uuid
 import pyautogui
-import matcher
+import math
+def test():
+    doublePI = 3.14 * 2.0
+    (w, h) = pyautogui.size()
+    h = h / 2
 
-
-def clickNow(matchImage):
-    screenShot = '.\\samples\\'
-    screenShot += (uuid.uuid4().hex)
-    screenShot += '.png'
-    pyautogui.screenshot(screenShot)
-
-    (pointX, pointY) = matcher.calcCenterPoint(
-        screenShot,  matchImage)
-
-    print(pointX)
-    print(pointY)
-    pyautogui.moveTo(pointX, pointY)
-    pyautogui.click()
-
-
-clickNow(""".\samples\\test2.png""")
+    for x in range(0, w):
+        y = h * math.sin((doublePI * x)/w) + h
+        pyautogui.moveTo(x, y, pyautogui.MINIMUM_DURATION)
