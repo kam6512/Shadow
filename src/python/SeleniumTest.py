@@ -14,6 +14,7 @@ from util import ClipBoard
 POINT_START = 'A2'
 POINT_ADDRESS = 'A6'
 POINT_DISTANCE = ['D', '6']
+wait = WebDriverWait(browser, 1.5)
 
 
 def clickNow(matchImage):
@@ -184,9 +185,7 @@ def getUnit():
 
 
 def getElement(xpath):
-    wait = WebDriverWait(browser, 1.5)
     element = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
-    # return browser.find_element_by_xpath(xpath)
     return element
 
 
