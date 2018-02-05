@@ -18,3 +18,9 @@ def currentLang():
         return 'kor'
     else:
         return 'eng'
+
+def convertToEng():
+    lang = Language.currentLang()
+    if lang == 'kor': 
+        pyautogui.press('hangul')
+

@@ -2,7 +2,7 @@
 import pyautogui
 import time
 
-import matcher
+from util import Scanner
 from util import ImagePath
 from util import Language
 
@@ -13,6 +13,7 @@ def clickNow(matchImage):
     pyautogui.screenshot(screenShot)
     point = matcher.calcCenterPoint(screenShot,  handle)
 
+    if len(point) == 0: return
     pyautogui.moveTo(point[0], point[1])
     pyautogui.click()
 
