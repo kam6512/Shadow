@@ -2,6 +2,9 @@ import os
 import time
 import pyautogui
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from util import Scanner
 from util import ImagePath
@@ -60,7 +63,7 @@ def openExcel():
     pyautogui.hotkey('ctrl', 'v')
     pyautogui.press('enter')
 
-    time.sleep(1)
+    time.sleep(3)
     pyautogui.press('enter')
 
 
@@ -118,7 +121,6 @@ def setStartAddress(address):
 
 
 def setEndAddress(address):
-    time.sleep(1)
     try:
         getElement('//*[@id="info.route.waypointSuggest.input1"]').click()
     except:
@@ -133,14 +135,16 @@ def searchAndGetDistance(addressInfos):
     addressText = addressInfos[0].strip() + ' ' + addressInfos[1].strip()
     print(addressText)
     setEndAddress(addressText)
-    time.sleep(1)
     getElement('//*[@id="walktab"]').click()
 
-    clickNow('distanceBtn.png')
+    # clickNow('distanceBtn.png')
+    getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
     
-    clickNow('start.png')
+    # clickNow('start.png')
+    getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[1]/img').click()
     
-    clickNow('end.png')
+    # clickNow('end.png')
+    getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[2]/img').click()
     
     pyautogui.press('esc')
     
@@ -163,7 +167,10 @@ def getUnit():
 
 
 def getElement(xpath):
-    return browser.find_element_by_xpath(xpath)
+    wait = WebDriverWait(browser, 1.5)
+    element = wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
+    # return browser.find_element_by_xpath(xpath)
+    return element
 
 
 def closeExcel():
