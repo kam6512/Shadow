@@ -33,6 +33,9 @@ def test():
     openExcel()
     ADDRESS_START = getStartAddress()
     ADDRESS_END = getEndAddresses()
+    print(ADDRESS_START)
+    print(ADDRESS_END)
+    # return
     global browser
     browser = startSelenium()
     setStartAddress(ADDRESS_START)
@@ -44,7 +47,7 @@ def test():
             continue
         distance = searchAndGetDistance(addressInfos)
 
-        clickNow('excel.png')
+        clickNow('excel_fhd.png')
         pyautogui.press('f5')
         distancePoint = int(POINT_DISTANCE[1]) + i
         distancePoint = POINT_DISTANCE[0] + str(distancePoint)
@@ -54,7 +57,10 @@ def test():
         pyautogui.press('del')
         pyautogui.typewrite(str(distance))
         pyautogui.press('enter')
-        clickNow('chrome.png')
+        clickNow('chrome_fhd.png')
+    
+    closeExcel()
+
 
 
 def openExcel():
@@ -71,11 +77,13 @@ def getStartAddress():
     pyautogui.press('f5')
     pyautogui.typewrite(POINT_START)
     pyautogui.press('enter')
-
-    pyautogui.hotkey('shift', 'right')
+    
+    pyautogui.press('f8')
+    pyautogui.press('right')
+    pyautogui.press('enter')
+    # pyautogui.hotkey('shift', 'right')
     pyautogui.hotkey('ctrl', 'c')
     ADDRESS_START = ClipBoard.getClipboardData()
-    # print(ADDRESS_START)
     return ADDRESS_START
 
 
@@ -140,11 +148,19 @@ def searchAndGetDistance(addressInfos):
     # clickNow('distanceBtn.png')
     getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
     
-    # clickNow('start.png')
-    getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[1]/img').click()
+    visible = False
+    while(visible == False):
+        try:
+            # clickNow('start.png')
+            getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[1]/img').click()
+            
+            # clickNow('end.png')
+            getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[2]/img').click()
+            visible = True
+        except :
+            getElement('//*[@id="view.map"]/div[9]/div[2]/div[1]/div[3]').click()
+            visible = False
     
-    # clickNow('end.png')
-    getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[2]/img').click()
     
     pyautogui.press('esc')
     
@@ -155,7 +171,8 @@ def searchAndGetDistance(addressInfos):
     if unit == 'km':
         distance = float(distance) * 1000
 
-    clickNow('exit.png')
+    # clickNow('exit.png')
+    getElement('//*[@id="view.map"]/div[3]/div/div[6]/div[6]/a').click()
     print(distance)
     return distance
 
@@ -174,7 +191,7 @@ def getElement(xpath):
 
 
 def closeExcel():
-    os.system('TASKKILL /F /IM excel.exe')
+    os.system('TASKKILL /F /IM chrome.exe')
 
 
 test()
