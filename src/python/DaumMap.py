@@ -35,6 +35,7 @@ class ExcelIO:
         pyautogui.press('f8')
         pyautogui.press('right')
         pyautogui.press('enter')
+        time.sleep(0.5)
         # pyautogui.hotkey('shift', 'right')
         pyautogui.hotkey('ctrl', 'c')
         ADDRESS_START = self.clip.getClipboardData()
@@ -74,7 +75,6 @@ class ExcelIO:
         pyautogui.press('enter')
 
 class Xpath:
-    wait = None
 
     def __init__(self, link):
         browser = self.startSelenium(link)
@@ -107,6 +107,86 @@ class Xpath:
 
         self.getElement(
             '//*[@id="info.route.waypointSuggest.input1"]').send_keys(address)
+        pyautogui.press('enter')
+
+    def searchAndGetDistance(self, addressInfos):
+        addressText = addressInfos[0].strip() + ' ' + addressInfos[1].strip()
+        self.setEndAddress(addressText)
+        self.getElement('//*[@id="walktab"]').click()
+
+        self.enableDistanceTool()
+        distance = self.getDistance()
+        self.disableDistanceTool()
+
+        return distance
+
+    def enableDistanceTool(self):
+        # clickNow('distanceBtn.png')
+        self.getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
+
+        
+        while(True):
+            try:
+                # clickNow('start.png')
+                self.getElement(
+                    '//*[@id="view.map"]/div[3]/div/div[6]/div[1]/img').click()
+
+                # clickNow('end.png')
+                self.getElement(
+                    '//*[@id="view.map"]/div[3]/div/div[6]/div[2]/img').click()
+                break
+            except:
+                self.getElement(
+                    '//*[@id="view.map"]/div[9]/div[2]/div[1]/div[3]').click()
+
+        pyautogui.press('esc')
+
+    def disableDistanceTool(self):
+        # clickNow('exit.png')
+        self.getElement(
+            '//*[@id="view.map"]/div[3]/div/div[6]/div[6]/a').click()
+
+    def getDistance(self):
+        distance = self.getElement(
+            '//*[@id="view.map"]/div[3]/div/div[6]/div[3]/div/ul/li[2]/strong').text
+        unit = self.getElement(
+            '//*[@id="view.map"]/div[3]/div/div[6]/div[3]/div/ul/li[2]/span[2]').text
+        if unit == 'km':
+            distance = float(distance) * 1000
+        return distance
+
+    def getElement(self, xpath):
+        element = self.wait.until(
+            EC.element_to_be_clickable((By.XPATH, xpath)))
+        return element
+
+
+
+class OCR:
+
+    def __init__(self, link):
+        self.clip = ClipBoard.Clip()
+        self.startBrowser(link)
+
+    def startBrowser(self, link="http://map.daum.net/"):
+        pyautogui.hotkey('win', 'r')
+        self.clip.setClipboard(link)
+        pyautogui.typewrite('chrome.exe ')
+        pyautogui.hotkey('ctrl', 'v')
+        pyautogui.press('enter')
+        time.sleep(1)
+        pyautogui.hotkey('win', 'up')
+
+    def changeModeToWalk(self):pass
+
+    def setStartAddress(self, address):
+        self.clip.setClipboard(address)
+        pyautogui.hotkey('ctrl', 'v')
+        pyautogui.press('enter')
+
+    def setEndAddress(self, address):
+        self.clip.setClipboard(address)
+        pyautogui.hotkey('ctrl', 'v')
         pyautogui.press('enter')
 
     def searchAndGetDistance(self, addressInfos):
