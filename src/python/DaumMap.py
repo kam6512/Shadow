@@ -78,7 +78,7 @@ class Xpath:
 
     def __init__(self, link):
         browser = self.startSelenium(link)
-        self.wait = WebDriverWait(browser, 0.5)
+        self.wait = WebDriverWait(browser, 1.0)
 
     def startSelenium(self, link="http://map.daum.net/"):
         browser = webdriver.Chrome('.\\util\\driver\\chromedriver')
@@ -124,8 +124,8 @@ class Xpath:
         # clickNow('distanceBtn.png')
         self.getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
 
-        visible = False
-        while(visible == False):
+        
+        while(True):
             try:
                 # clickNow('start.png')
                 self.getElement(
@@ -134,11 +134,10 @@ class Xpath:
                 # clickNow('end.png')
                 self.getElement(
                     '//*[@id="view.map"]/div[3]/div/div[6]/div[2]/img').click()
-                visible = True
+                break
             except:
                 self.getElement(
                     '//*[@id="view.map"]/div[9]/div[2]/div[1]/div[3]').click()
-                visible = False
 
         pyautogui.press('esc')
 
