@@ -1,111 +1,42 @@
 import os
-import time
 import pyautogui
-from extension import DaumMap
+import DaumMap
 
 from util import Scanner
-from util import ImagePath
-from util import Language
 from util import ClipBoard
 
-POINT_START = 'A2'
-POINT_ADDRESS = 'A6'
-POINT_DISTANCE = ['D', '6']
 
-def clickNow(matchImage):
-    path = ImagePath.createPath(matchImage)
-    handle = path[0]
-    screenShot = path[1]
-    pyautogui.screenshot(screenShot)
-    point = Scanner.calcCenterPoint(screenShot,  handle)
+class Test:
+    def __init__(self):
+        self.clip = ClipBoard.Clip()
+        self.scanner = Scanner.MatchTemplate()
 
-    if len(point) == 0:
-        return
-    pyautogui.moveTo(point[0], point[1])
-    pyautogui.click()
+    def test(self):
+        excel = DaumMap.ExcelIO("C:\Temp\거리측정 주소목록.xlsx")
+        startAddress = excel.getStartAddress()
+        endAddress = excel.getEndAddresses()
 
+        daumMap = DaumMap.Xpath("http://map.daum.net/")
+        daumMap.changeModeToWalk()
+        daumMap.setStartAddress(startAddress)
 
-def test():
-    openExcel()
-    ADDRESS_START = getStartAddress()
-    ADDRESS_END = getEndAddresses()
+        for i in range(0, len(endAddress)):
+            addressInfos = endAddress[i].split('\t')
+            permission = addressInfos[2].strip()
+            if permission == '제외': continue
+            distance = daumMap.searchAndGetDistance(addressInfos)
 
-    daumMap = DaumMap.Extension("http://map.daum.net/")
-    daumMap.changeModeToWalk()
-    daumMap.setStartAddress(ADDRESS_START)
-    for i in range(0, len(ADDRESS_END)):
-        addressInfos = ADDRESS_END[i].split('\t')
+            self.clickNow('excel.png')
+            excel.setDistance(i, distance)
+            self.clickNow('chrome.png')
 
-        permission = addressInfos[2].strip()
-        if permission == '제외':
-            continue
-        distance = daumMap.searchAndGetDistance(addressInfos)
+        self.close()
 
-        clickNow('excel.png')
-        pyautogui.press('f5')
-        distancePoint = int(POINT_DISTANCE[1]) + i
-        distancePoint = POINT_DISTANCE[0] + str(distancePoint)
-        pyautogui.typewrite(distancePoint)
-        print(distancePoint)
-        pyautogui.press('enter')
-        pyautogui.press('del')
-        pyautogui.typewrite(str(distance))
-        pyautogui.press('enter')
-        clickNow('chrome.png')
+    def clickNow(self, templateImage):
+        self.scanner.clickNow(templateImage)
 
-    close()
+    def close(self):
+        os.system('TASKKILL /F /IM chrome.exe')
 
 
-def openExcel():
-    pyautogui.hotkey('win', 'r')
-    ClipBoard.setClipboard("C:\Temp\거리측정 주소목록.xlsx")
-    pyautogui.hotkey('ctrl', 'v')
-    pyautogui.press('enter')
-
-    time.sleep(3)
-    pyautogui.press('enter')
-
-
-def getStartAddress():
-    pyautogui.press('f5')
-    pyautogui.typewrite(POINT_START)
-    pyautogui.press('enter')
-
-    pyautogui.press('f8')
-    pyautogui.press('right')
-    pyautogui.press('enter')
-    # pyautogui.hotkey('shift', 'right')
-    pyautogui.hotkey('ctrl', 'c')
-    ADDRESS_START = ClipBoard.getClipboardData()
-    return ADDRESS_START
-
-
-def getEndAddresses():
-    pyautogui.press('f5')
-    pyautogui.typewrite(POINT_ADDRESS)
-    pyautogui.press('enter')
-
-    pyautogui.hotkey('ctrl', 'down')
-    pyautogui.hotkey('ctrl', 'down')
-    pyautogui.hotkey('ctrl', 'up')
-
-    pyautogui.press('right')
-    pyautogui.press('right')
-    pyautogui.press('f8')
-
-    pyautogui.press('f5')
-    pyautogui.typewrite(POINT_ADDRESS)
-    pyautogui.press('enter')
-
-    pyautogui.hotkey('ctrl', 'c')
-    ADDRESS_END = ClipBoard.getClipboardData()
-    ADDRESS_END = ADDRESS_END.split('\n')
-    ADDRESS_END.pop()
-    return ADDRESS_END
-
-
-def close():
-    os.system('TASKKILL /F /IM chrome.exe')
-
-
-test()
+Test().test()

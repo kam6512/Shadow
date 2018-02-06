@@ -1,12 +1,79 @@
-
+import time
 import pyautogui
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from util import ClipBoard
 
-class Extension:
+
+class ExcelIO:
+    startPoint = 'A2'
+    addressPoint = 'A6'
+    POINT_DISTANCE = ['D', '6']
+
+    def __init__(self, path):
+        self.clip = ClipBoard.Clip()
+        self.openExcelFile(path)
+
+    def openExcelFile(self, path="C:\Temp\거리측정 주소목록.xlsx"):
+        pyautogui.hotkey('win', 'r')
+        self.clip.setClipboard(path)
+
+        pyautogui.hotkey('ctrl', 'v')
+        pyautogui.press('enter')
+
+        time.sleep(3)
+        pyautogui.press('enter')
+
+    def getStartAddress(self):
+        pyautogui.press('f5')
+        pyautogui.typewrite(self.startPoint)
+        pyautogui.press('enter')
+
+        pyautogui.press('f8')
+        pyautogui.press('right')
+        pyautogui.press('enter')
+        # pyautogui.hotkey('shift', 'right')
+        pyautogui.hotkey('ctrl', 'c')
+        ADDRESS_START = self.clip.getClipboardData()
+        return ADDRESS_START
+
+    def getEndAddresses(self):
+        pyautogui.press('f5')
+        pyautogui.typewrite(self.addressPoint)
+        pyautogui.press('enter')
+
+        pyautogui.hotkey('ctrl', 'down')
+        pyautogui.hotkey('ctrl', 'down')
+        pyautogui.hotkey('ctrl', 'up')
+
+        pyautogui.press('right')
+        pyautogui.press('right')
+        pyautogui.press('f8')
+
+        pyautogui.press('f5')
+        pyautogui.typewrite(self.addressPoint)
+        pyautogui.press('enter')
+
+        pyautogui.hotkey('ctrl', 'c')
+        ADDRESS_END = self.clip.getClipboardData()
+        ADDRESS_END = ADDRESS_END.split('\n')
+        ADDRESS_END.pop()
+        return ADDRESS_END
+
+    def setDistance(self, countIndex, distance):
+        pyautogui.press('f5')
+        distancePoint = int(self.POINT_DISTANCE[1]) + countIndex
+        distancePoint = self.POINT_DISTANCE[0] + str(distancePoint)
+        pyautogui.typewrite(distancePoint)
+        pyautogui.press('enter')
+        pyautogui.press('del')
+        pyautogui.typewrite(str(distance))
+        pyautogui.press('enter')
+
+class Xpath:
     wait = None
 
     def __init__(self, link):
@@ -44,7 +111,6 @@ class Extension:
 
     def searchAndGetDistance(self, addressInfos):
         addressText = addressInfos[0].strip() + ' ' + addressInfos[1].strip()
-        print(addressText)
         self.setEndAddress(addressText)
         self.getElement('//*[@id="walktab"]').click()
 
