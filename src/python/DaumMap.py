@@ -74,6 +74,7 @@ class ExcelIO:
         pyautogui.typewrite(str(distance))
         pyautogui.press('enter')
 
+
 class Xpath:
 
     def __init__(self, link):
@@ -124,8 +125,7 @@ class Xpath:
         # clickNow('distanceBtn.png')
         self.getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
 
-        
-        while(True):
+        while (True):
             try:
                 # clickNow('start.png')
                 self.getElement(
@@ -161,7 +161,6 @@ class Xpath:
         return element
 
 
-
 class OCR:
 
     def __init__(self, link):
@@ -177,7 +176,8 @@ class OCR:
         time.sleep(1)
         pyautogui.hotkey('win', 'up')
 
-    def changeModeToWalk(self):pass
+    def changeModeToWalk(self):
+        pass
 
     def setStartAddress(self, address):
         self.clip.setClipboard(address)
@@ -204,8 +204,7 @@ class OCR:
         # clickNow('distanceBtn.png')
         self.getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
 
-        
-        while(True):
+        while True:
             try:
                 # clickNow('start.png')
                 self.getElement(

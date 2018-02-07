@@ -1,3 +1,5 @@
+import cv2
+
 try:
     import Image
 except ImportError:
@@ -5,9 +7,15 @@ except ImportError:
 import pytesseract
 
 pytesseract.pytesseract.tesseract_cmd = 'C:\\DEV_MODULE\\Tesseract-OCR\\tesseract.exe'
-def OCR(path, language = 'eng'):
-    image = Image.open(path)
-    text = pytesseract.image_to_string(image, lang=language)
+
+
+def ocr(path):
+    image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    image = cv2.pyrUp(image)
+    ocr(image)
+    cv2.imwrite('..\\samples\\upscale.png', image)
+    text = pytesseract.image_to_string(image, lang='eng', config="-psm 7 -oem 3")
     print(text)
 
-# OCR('..\samples\OCR\\2.png')
+
+ocr('..\samples\\36.png')
