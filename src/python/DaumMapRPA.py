@@ -2,11 +2,6 @@ import os
 import time
 import pyautogui
 import DaumMap
-try:
-    import Image
-except ImportError:
-    from PIL import Image
-import pytesseract
 
 from util import Scanner
 from util import ClipBoard
@@ -17,7 +12,6 @@ class Test:
     def __init__(self):
         self.clip = ClipBoard.Clip()
         self.scanner = Scanner.MatchTemplate()
-        pytesseract.pytesseract.tesseract_cmd = 'C:\\DEV_MODULE\\Tesseract-OCR\\tesseract.exe'
 
     def ocr(self):
         excel = DaumMap.ExcelIO("C:\Temp\거리측정 주소목록.xlsx")
@@ -25,7 +19,7 @@ class Test:
         endAddress = excel.getEndAddresses()
 
         daumMap = DaumMap.OCR("http://map.daum.net/")
-        time.sleep(1)
+        time.sleep(5)
         self.clickNow('walkmode.png')
         daumMap.setStartAddress(startAddress)
 
@@ -52,23 +46,13 @@ class Test:
             pyautogui.press('esc')
 
             pos = self.scanner.clacPointWithDirection('distance_label.png')
+            distance = daumMap.getDistance(pos)
 
-            # image = pyautogui.screenshot('.\\samples\\res.png', region=(pos[0]+20, pos[1]-10, 30, 20))
-            image = pyautogui.screenshot('.\\samples\\res.png', region=(pos[0] + 20, pos[1] - 10, 30, 20))
-            text = pytesseract.image_to_string(image, lang='eng')
-            print(text)
+            self.clickNow('exit.png')
 
-
-            # pyautogui.hotkey('ctrl', 'c')
-            # distance = self.clip.getClipboardData()
-
-            # self.clickNow('exit.png')
-
-            # self.clickNow('excel.png')
-            # excel.setDistance(i, distance)
-            # self.clickNow('chrome.png')
-            break
-
+            self.clickNow('excel.png')
+            excel.setDistance(i, distance)
+            self.clickNow('chrome.png')
         # self.close()
 
     def drag(self):
@@ -77,7 +61,7 @@ class Test:
         endAddress = excel.getEndAddresses()
 
         daumMap = DaumMap.OCR("http://map.daum.net/")
-        time.sleep(1)
+        time.sleep(5)
         self.clickNow('walkmode.png')
         # self.scanner.clickWithDirection('walkmode.png', Direction.CENTER)
         daumMap.setStartAddress(startAddress)
@@ -116,7 +100,7 @@ class Test:
 
         # self.close()
 
-    def test(self):
+    def xPath(self):
         excel = DaumMap.ExcelIO("C:\Temp\거리측정 주소목록.xlsx")
         startAddress = excel.getStartAddress()
         endAddress = excel.getEndAddresses()
@@ -142,12 +126,6 @@ class Test:
 
     def close(self):
         os.system('TASKKILL /F /IM chrome.exe')
-
-    def ocrtest(self, language = 'kor'):
-        image = pyautogui.screenshot(region=(0, 0, 300, 400))
-        text = pytesseract.image_to_string(image, lang=language)
-        print(text)
-
 
 
 Test().ocr()

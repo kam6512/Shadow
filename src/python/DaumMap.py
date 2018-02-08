@@ -1,5 +1,8 @@
 import time
+import re
+import cv2 as cv
 import pyautogui
+import pytesseract
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -164,6 +167,8 @@ class Xpath:
 class OCR:
 
     def __init__(self, link):
+        pytesseract.pytesseract.tesseract_cmd = 'C:\\DEV_MODULE\\Tesseract-OCR\\tesseract.exe'
+        self.ocrPath = '.\\samples\\Temp\\ocr.png'
         self.clip = ClipBoard.Clip()
         self.startBrowser(link)
 
@@ -190,51 +195,28 @@ class OCR:
         pyautogui.press('enter')
 
     def searchAndGetDistance(self, addressInfos):
-        addressText = addressInfos[0].strip() + ' ' + addressInfos[1].strip()
-        self.setEndAddress(addressText)
-        self.getElement('//*[@id="walktab"]').click()
-
-        self.enableDistanceTool()
-        distance = self.getDistance()
-        self.disableDistanceTool()
-
-        return distance
+        pass
 
     def enableDistanceTool(self):
-        # clickNow('distanceBtn.png')
-        self.getElement('//*[@id="view.map"]/div[9]/div[3]/a[1]').click()
-
-        while True:
-            try:
-                # clickNow('start.png')
-                self.getElement(
-                    '//*[@id="view.map"]/div[3]/div/div[6]/div[1]/img').click()
-
-                # clickNow('end.png')
-                self.getElement(
-                    '//*[@id="view.map"]/div[3]/div/div[6]/div[2]/img').click()
-                break
-            except:
-                self.getElement(
-                    '//*[@id="view.map"]/div[9]/div[2]/div[1]/div[3]').click()
-
-        pyautogui.press('esc')
+        pass
 
     def disableDistanceTool(self):
-        # clickNow('exit.png')
-        self.getElement(
-            '//*[@id="view.map"]/div[3]/div/div[6]/div[6]/a').click()
+        pass
 
-    def getDistance(self):
-        distance = self.getElement(
-            '//*[@id="view.map"]/div[3]/div/div[6]/div[3]/div/ul/li[2]/strong').text
-        unit = self.getElement(
-            '//*[@id="view.map"]/div[3]/div/div[6]/div[3]/div/ul/li[2]/span[2]').text
+    def getDistance(self, pos):
+        pyautogui.screenshot(self.ocrPath, region=(pos[0] + 20, pos[1] - 10, 50, 20))
+        image = cv.imread(self.ocrPath, cv.IMREAD_GRAYSCALE)
+        image = cv.pyrUp(image)
+        distance = pytesseract.image_to_string(image, lang='eng')
+
+        distance = distance.replace(' ', '')
+        units = re.compile('(\.|\d)')
+        unit = units.sub('', distance)
+        print(unit)
+        distance = distance.replace(unit, '')
+        print(distance)
+
         if unit == 'km':
             distance = float(distance) * 1000
         return distance
 
-    def getElement(self, xpath):
-        element = self.wait.until(
-            EC.element_to_be_clickable((By.XPATH, xpath)))
-        return element

@@ -1,12 +1,12 @@
 import cv2
 
-try:
-    import Image
-except ImportError:
-    from PIL import Image
+# try:
+#     import Image
+# except ImportError:
+#     from PIL import Image
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = 'C:\DEV\MODULES\Tesseract-OCR\\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = 'C:\\DEV_MODULE\\Tesseract-OCR\\tesseract.exe'
 
 
 def ocr(path):
@@ -17,4 +17,4 @@ def ocr(path):
     print(text)
 
 
-ocr('..\samples\\36.png')
+ocr('..\samples\\km.png')

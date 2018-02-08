@@ -1,15 +1,14 @@
-import win32clipboard
 import time
 import re
 import pyautogui
 import ClipBoard
 
-class Typer:
-    clip = None
 
+class Typer:
     def __init__(self):
-        clip = ClipBoard.Clip()
-    def currentLang(self): 
+        self.clip = ClipBoard.Clip()
+
+    def currentLang(self):
         time.sleep(1)
         pyautogui.press('a')
         pyautogui.press('delete')
@@ -28,4 +27,3 @@ class Typer:
 
     def convertToKor(self):
         if self.currentLang() == 'eng': pyautogui.press('hangul')
-
