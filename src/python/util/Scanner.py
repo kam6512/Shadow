@@ -10,6 +10,9 @@ import AssetPath
 
 
 def original():
+    
+    lineColor = (0, 0, 255)
+    thickness = 2
     img_rgb = cv.imread('.\\samples\\main.png')
     img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
     template = cv.imread('.\samples\Handle\chrome.png', 0)
@@ -20,8 +23,7 @@ def original():
     for pt in zip(*loc[::-1]):
         start = pt
         end = (pt[0] + w, pt[1] + h)
-        cv.rectangle(img_rgb, start, end, self.lineColor, self.thickness)
-        break
+        cv.rectangle(img_rgb, start, end, lineColor, thickness)
     cv.imwrite('.\\samples\\Temp\\res.png', img_rgb)
 
 
