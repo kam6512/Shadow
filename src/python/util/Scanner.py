@@ -5,10 +5,11 @@ import numpy as np
 # from matplotlib import pyplot as plt
 import pyautogui
 
-from . import AssetPath
+# from . import AssetPath
+import AssetPath
 
 
-def original(self):
+def original():
     img_rgb = cv.imread('.\\samples\\main.png')
     img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
     template = cv.imread('.\samples\Handle\chrome.png', 0)
@@ -21,26 +22,66 @@ def original(self):
         end = (pt[0] + w, pt[1] + h)
         cv.rectangle(img_rgb, start, end, self.lineColor, self.thickness)
         break
-    cv.imwrite('.\\samples\\res.png', img_rgb)
+    cv.imwrite('.\\samples\\Temp\\res.png', img_rgb)
 
 
-def originalWithScreenShot(self):
-    pyautogui.screenshot('.\\samples\\main.png')
-    img_rgb = cv.imread('.\\samples\\main.png')
+def originalWithScreenShot():
+    pyautogui.screenshot('..\\samples\\Temp\\main.png')
+    img_rgb = cv.imread('..\\samples\\Temp\\main.png')
     img_gray = cv.cvtColor(img_rgb, cv.COLOR_BGR2GRAY)
-    template = cv.imread('.\samples\Handle\distance_label.png', 0)
+    template = cv.imread('..\\samples\\Handle\\trans_test_new.png', 0)
     w, h = template.shape[::-1]
     res = cv.matchTemplate(img_gray, template, cv.TM_CCOEFF_NORMED)
-    threshold = 0.95
+    threshold = 0.96
     loc = np.where(res >= threshold)
+
+    startList = []
+    endList = []
     for pt in zip(*loc[::-1]):
-        start = pt
-        end = (pt[0] + w, pt[1] + h)
-        cv.rectangle(img_rgb, start, end, self.lineColor, self.thickness)
-        break
-    cv.imwrite('.\\samples\\res.png', img_rgb)
-    print(start)
-    print(end)
+        startList.append(pt)
+        endList.append((pt[0] + w, pt[1] + h))
+
+    points = mergePorintValue(startList, endList)
+
+    lineColor = (0, 0, 255)
+    thickness = 2
+    for point in points:
+        print(point)
+        cv.rectangle(img_rgb, point[0], point[1], lineColor, thickness)
+
+    cv.imwrite('..\\samples\\Temp\\res.png', img_rgb)
+
+
+def mergePorintValue(startList, endList):
+    startList = mergeSimilarValue(startList)
+    endList = mergeSimilarValue(endList)
+    length = 0
+    if len(startList) == len(endList):
+        length = len(startList)
+
+    points = []
+    for idx in range(length):
+        point = [(startList[idx]), (endList[idx])]
+        points.append(point)
+    return points
+
+def mergeSimilarValue(valueList):
+    for idx, value in enumerate(valueList):
+        length = len(valueList)
+        if idx+1 == length:
+            break
+        currentVal = value[0]+value[1]
+        for nextIdx in range(idx+1, length):
+            nextValue = valueList[nextIdx]
+            nextVal = nextValue[0]+nextValue[1]
+            if abs(currentVal-nextVal) < 10:
+                valueList[nextIdx] = (int((value[0]+nextValue[0])/2),
+                                    int((value[1]+nextValue[1])/2))
+                valueList[idx] = 0
+
+    return list(filter(lambda x: x != 0, valueList))
+
+originalWithScreenShot()
 
 
 class Direction(Enum):
